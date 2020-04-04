@@ -1,6 +1,4 @@
-package ser321.assign2.lindquis;
-
-import java.io.*;
+package ser321.assign3.ghli1;import java.io.*;
 import java.util.*;
 import java.net.URL;
 import org.json.JSONObject;

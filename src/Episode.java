@@ -1,6 +1,4 @@
-package ser321.assign2.lindquis;
-
-/**
+package ser321.assign3.ghli1;/**
  * Copyright 2020 Gene Li,
  *
  * This software is the intellectual property of the author, and can not be 
@@ -21,7 +19,7 @@ package ser321.assign2.lindquis;
  * @version March 2020
  */
 
-public class Episode{
+public class Episode implements java.io.Serializable{
 
 	private String Title;
 	private int Episode;

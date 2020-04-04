@@ -7,9 +7,7 @@
  * You are free add more files and further modularize this class's
  * functionality.
  */
-package ser321.assign2.lindquis;
-
-import javax.swing.*;
+package ser321.assign3.ghli1;import javax.swing.*;
 import java.io.*;
 import java.nio.file.Paths;
 import java.nio.charset.Charset;

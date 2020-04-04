@@ -1,6 +1,10 @@
+
 package ser321.assign3.ghli1;
-import java.util.ArrayList;
+
+import java.rmi.*;
 import org.json.JSONObject;
+
+import ser321.assign2.lindquis.SeriesSeason;
 
 /**
  * Copyright 2020 Gene Li and Tim Lindquist,
@@ -14,22 +18,17 @@ import org.json.JSONObject;
  * All other uses are prohibited and reserved to the author.
  * 
  * 
- * Purpose: SeriesLibrary defines the interface for series library operations.
+ * Purpose: RMI API interface
  *
  * Ser321 Principles of Distributed Software Systems
  * see http://pooh.poly.asu.edu/Ser321
  * @author Gene H. Li ghli1@asu.edu
  *	   Tim Lindquist Tim.Lindquist@asu.edu
  *         Software Engineering, CIDSE, IAFSE, ASU Poly
- * @version March 2020
+ * @version April 2020
  */
 
-public interface SeriesLibrary{
-	public ArrayList<String> getSeriesSeason();
-	public SeriesSeason getSeriesSeason(String title);
-	public boolean addSeriesSeason(SeriesSeason seriesSeason);
-	public boolean removeSeriesSeason(String title);
-	public JSONObject saveLibraryToFile();
-	public boolean restoreLibraryFromFile(JSONObject file);
-	
+public interface SeriesServer extends Remote {
+    public SeriesSeason getSeriesSeason(String title) throws RemoteException;
+    public boolean addSeriesSeason(String title, JSONObject seriesSeason);
 }

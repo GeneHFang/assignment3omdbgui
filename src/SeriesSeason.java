@@ -1,7 +1,5 @@
 
-package ser321.assign2.lindquis;
-
-import java.util.ArrayList;
+package ser321.assign3.ghli1;import java.util.ArrayList;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
@@ -29,7 +27,7 @@ import org.json.JSONArray;
  */
 
 
-public class SeriesSeason extends Object {
+public class SeriesSeason extends Object implements java.io.Serializable {
 
 	private String title;
 	private int season;
