@@ -1,4 +1,5 @@
-package ser321.assign3.ghli1;/**
+package ser321.assign3.ghli1;
+/**
  * Copyright 2020 Gene Li,
  *
  * This software is the intellectual property of the author, and can not be 
@@ -16,7 +17,7 @@ package ser321.assign3.ghli1;/**
  * see http://pooh.poly.asu.edu/Ser321
  * @author Gene H. Li ghli1@asu.edu
  *         Software Engineering, CIDSE, IAFSE, ASU Poly
- * @version March 2020
+ * @version April 2020
  */
 
 public class Episode implements java.io.Serializable{

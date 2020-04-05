@@ -1,4 +1,5 @@
 package ser321.assign3.ghli1;
+import java.rmi.*;
 import java.util.ArrayList;
 import org.json.JSONObject;
 
@@ -24,12 +25,12 @@ import org.json.JSONObject;
  * @version March 2020
  */
 
-public interface SeriesLibrary{
-	public ArrayList<String> getSeriesSeason();
-	public SeriesSeason getSeriesSeason(String title);
-	public boolean addSeriesSeason(SeriesSeason seriesSeason);
-	public boolean removeSeriesSeason(String title);
-	public JSONObject saveLibraryToFile();
-	public boolean restoreLibraryFromFile(JSONObject file);
+public interface SeriesLibrary extends Remote{
+	public ArrayList<String> getSeriesSeason() throws RemoteException;
+	public SeriesSeason getSeriesSeason(String title) throws RemoteException;
+	public boolean addSeriesSeason(SeriesSeason seriesSeason) throws RemoteException;
+	public boolean removeSeriesSeason(String title) throws RemoteException;
+	public boolean saveLibraryToFile() throws RemoteException;
+	public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException;
 	
 }

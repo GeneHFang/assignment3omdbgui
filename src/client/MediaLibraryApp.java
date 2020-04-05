@@ -7,9 +7,10 @@
  * You are free add more files and further modularize this class's
  * functionality.
  */
-package ser321.assign3.ghli1;import javax.swing.*;
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Paths;
+import java.rmi.*;
 import java.nio.charset.Charset;
 import javax.sound.sampled.*;
 import java.beans.*;
@@ -33,6 +34,7 @@ import java.time.Duration;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONTokener;
+import ser321.assign3.ghli1.*;
 
 /**
  * Copyright 2020 Tim Lindquist, Gene H. Li
@@ -61,47 +63,57 @@ TreeSelectionListener {
 	private static String urlOMBD;
 	private String url;
 	//private MediaLibrary library;
-	private SeriesLibraryImpl slibrary, searchlibrary;
+	private SeriesLibraryImpl searchlibrary;
+	private SeriesLibrary slibrary;
 	private String omdbKey;
 	private boolean searchFlag = false;
 
-	public MediaLibraryApp(String author, String authorKey) {
-        // sets the value of 'author' on the title window of the GUI.
+	public MediaLibraryApp(String author, String authorKey, String hostId, String regPort) {
 		super(author);
-		this.omdbKey = authorKey;
-		urlOMBD = pre + authorKey + "&t=";
-		//library = new MediaLibraryImpl(); // TODO: this would need to be your  SeriesLibraryImpl
-		slibrary = new SeriesLibraryImpl(true);		
-
-		// register this object as an action listener for menu item clicks. This will cause
-		// my actionPerformed method to be called every time the user selects a menuitem.
-		for(int i=0; i<userMenuItems.length; i++){
-			for(int j=0; j<userMenuItems[i].length; j++){
-				userMenuItems[i][j].addActionListener(this);
+		
+		try {
+			this.slibrary = (SeriesLibrary) Naming.lookup(
+					"rmi://"+hostId+":"+regPort+"/SeriesLibrary");
+	
+					
+			// sets the value of 'author' on the title window of the GUI.
+			this.omdbKey = authorKey;
+			urlOMBD = pre + authorKey + "&t=";
+				
+			
+			// register this object as an action listener for menu item clicks. This will cause
+			// my actionPerformed method to be called every time the user selects a menuitem.
+			for(int i=0; i<userMenuItems.length; i++){
+				for(int j=0; j<userMenuItems[i].length; j++){
+					userMenuItems[i][j].addActionListener(this);
+				}
+			}
+			// register this object as an action listener for the Search button. This will cause
+			// my actionPerformed method to be called every time the user clicks the Search button
+			searchJButt.addActionListener(this);
+			try{
+				//tree.addTreeWillExpandListener(this);  // add if you want to get called with expansion/contract
+				tree.addTreeSelectionListener(this);
+				rebuildTree();
+			}catch (Exception ex){
+				JOptionPane.showMessageDialog(this,"Handling "+
+				" constructor exception: " + ex.getMessage());
+			}
+			try{
+				/*
+				* display an image just to show how the album or artist image can be displayed in the
+				* app's window. setAlbumImage is implemented by MediaLibraryGui class. Call it with a
+				* string url to a png file as obtained from an album search.
+				*/	
+				// TODO: set album image here
+				setAlbumImage("");
+				
+			}catch(Exception ex){
+				System.out.println("unable to open image");
 			}
 		}
-		// register this object as an action listener for the Search button. This will cause
-		// my actionPerformed method to be called every time the user clicks the Search button
-		searchJButt.addActionListener(this);
-		try{
-			//tree.addTreeWillExpandListener(this);  // add if you want to get called with expansion/contract
-			tree.addTreeSelectionListener(this);
-			rebuildTree();
-		}catch (Exception ex){
-			JOptionPane.showMessageDialog(this,"Handling "+
-					" constructor exception: " + ex.getMessage());
-		}
-		try{
-			/*
-			 * display an image just to show how the album or artist image can be displayed in the
-			 * app's window. setAlbumImage is implemented by MediaLibraryGui class. Call it with a
-			 * string url to a png file as obtained from an album search.
-			 */	
-			// TODO: set album image here
-			setAlbumImage("");
-
-		}catch(Exception ex){
-			System.out.println("unable to open image");
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		setVisible(true);
 	}

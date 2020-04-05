@@ -1,6 +1,9 @@
-package ser321.assign3.ghli1;import java.io.*;
+package ser321.assign3.ghli1;
+import java.io.*;
 import java.util.*;
 import java.net.URL;
+import java.rmi.server.*;
+import java.rmi.*;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONTokener;
@@ -18,27 +21,27 @@ import org.json.JSONTokener;
  * All other uses are prohibited and reserved to the author.
  * 
  * 
- * Purpose: SeriesLibraryImpl is the implementing class for library interface.
+ * Purpose: SeriesLibraryImpl is the implementing class for library interface. This version is run on a raspberry pi server
  *
  * Ser321 Principles of Distributed Software Systems
  * see http://pooh.poly.asu.edu/Ser321
  * @author Gene H. Li ghli1@asu.edu
  *	   Tim Lindquist Tim.Lindquist@asu.edu
  *         Software Engineering, CIDSE, IAFSE, ASU Poly
- * @version March 2020
+ * @version April 2020
  */
 
 
 
-public class SeriesLibraryImpl extends Object implements SeriesLibrary{
+public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibrary{
 
-	private Hashtable<String,SeriesSeason> aLib;
+	protected Hashtable<String,SeriesSeason> aLib;
 	private static final String fileName="seriesTest.json";
 
-	public SeriesLibraryImpl() { //blank constructor, used to manually populate fields
+	public SeriesLibraryImpl() throws RemoteException{ //blank constructor, used to manually populate fields
 		this.aLib = new Hashtable<String,SeriesSeason>();
 	}
-	public SeriesLibraryImpl(boolean init){ //constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
+	public SeriesLibraryImpl(boolean init) throws RemoteException{ //constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
 		this.aLib= new Hashtable<String,SeriesSeason>();
 		try { InputStream i = new FileInputStream(new File(fileName));
 				JSONObject series = new JSONObject(new JSONTokener(i));
@@ -90,7 +93,7 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 	}
 
 	//Returns a string arraylist in format of "SHOW TITLE - SHOW SEASON", which acts as the keys for the aLib hash
-	public ArrayList<String> getSeriesSeason(){
+	public ArrayList<String> getSeriesSeason() throws RemoteException{
 		ArrayList<String> retVal = new ArrayList<>();		
 		Enumeration keys = this.aLib.keys();
 
@@ -101,12 +104,12 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 		return retVal;
 	}
 	//returns the SeriesSeason object that corresponds to the key provided
-	public SeriesSeason getSeriesSeason(String title){
+	public SeriesSeason getSeriesSeason(String title) throws RemoteException{
 		return this.aLib.get(title);
 	}
 	
 	//Adds a SeriesSeason object to the aLib hash, using the "SHOW TITLE - SHOW SEASON" as key
-	public boolean addSeriesSeason(SeriesSeason seriesSeason){
+	public boolean addSeriesSeason(SeriesSeason seriesSeason) throws RemoteException{
 		try{
 			this.aLib.put(seriesSeason.getTitle()+" - Season "+seriesSeason.getSeason(), seriesSeason);
 			
@@ -118,7 +121,7 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 	}
 	
 	//Removes a SeriesSeason object that corresponds to the key provided
-	public boolean removeSeriesSeason(String title){
+	public boolean removeSeriesSeason(String title) throws RemoteException{
 		try{
 			this.aLib.remove(title);
 			return true;
@@ -129,19 +132,20 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 	}
 
 	//Helper method for getting Iterator of keyvalues
-	private Iterator<String> getKeys(){
+	private Iterator<String> getKeys() throws RemoteException{
 		return this.aLib.keySet().iterator();	
 	}
 	
 	//unused method for resetting aLib object
-	public void clears(){
+	public void clears() throws RemoteException{
 		this.aLib = new Hashtable<String, SeriesSeason>();
 	}
 	
 	//create JSON of Library
-	public JSONObject saveLibraryToFile(){
+	public boolean saveLibraryToFile() throws RemoteException{
 		JSONObject obj = new JSONObject();
 		Iterator<String> keys = getKeys();
+		boolean saveres = false; 
 		
 		//iterate through titles
 		while (keys.hasNext()){
@@ -170,13 +174,24 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 			obj.put(key, subObj);
 		}
 
-		return obj;
+		
+		try {
+			FileWriter file = new FileWriter("seriesTest.json");//SAVE TO seriesTest.json
+			file.write(obj.toString());
+			file.flush();
+			saveres = true;
+		}
+		catch(Exception e) {
+			System.out.println("Error saving, "+e.getMessage());
+		}
+
+		return saveres;
 
 		
 	}
 
 	//Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
-	public boolean restoreLibraryFromFile(JSONObject file){
+	public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException{
 		try{
 		Iterator<String> keys = file.keys();
 		String titleKey = "";
@@ -243,6 +258,24 @@ public class SeriesLibraryImpl extends Object implements SeriesLibrary{
 	}
 
 
+	public static void main(String args[]){
+		try { 
+			String hostID="localhost";
+			String regPort="1099";
+			if(args.length >= 2){
+				hostId = args[0];
+				regPort = args[1];
+			}
+
+			SeriesLibrary obj = new SeriesLibraryImpl(true);
+			Naming.rebind("rmi://"+hostId+":"+regPort+"/SeriesLibrary", obj);
+			System.out.println("Server bound in registry as: "+
+			"rmi://"+hostId+":"+regPort+"/SeriesLibrary");
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 
 
 }
