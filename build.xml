@@ -12,24 +12,14 @@
    <property name="userId" value="first.lastname" />
    <property name="omdbkey" value="your-omdb-api-key" />
    <property name="parentDir" value="${user.dir}${file.separator}" />
-   <property name="javafxhome" value="javafx-sdk-13.0.1/"/>
-   <property name="javafx-lib-home" value="${javafxhome}lib"/>
 
    <path id="compile.classpath">
       <pathelement location="${build}"/>
       <fileset dir="${lib}">
-         <include name="*.jar"/>
+         <include name="json.jar"/>
       </fileset>
-      <fileset dir="${basedir}/${javafx-lib-home}">
-         <include name="javafx.graphics.jar"/>
-         <include name="javafx.base.jar"/>
-         <include name="javafx.media.jar"/>
-         <include name="javafx.swing.jar"/>
-         <include name="javafx.controls.jar"/>
-         <include name="javafx.web.jar"/>
-         <include name="javafx.swt.jar"/>
-         <include name="javafx.fxml.jar"/>
-         <include name="javafx.controls.jar"/>
+	<fileset dir="${lib}">
+         <include name="assign2Gui.jar"/>
       </fileset>
    </path>
 
@@ -73,30 +63,9 @@
       <echo message="build.host.platform is: ${build.host.platform}"/>
    </target>
 
-   <target name="setup.javafx"
-           depends="prepare">
-     <if>
-       <isset property="build.host.ismac"/>
-         <then>
-           <echo message="detected property ismac is set"/>
-           <unzip src="${basedir}/openjfx-13.0.1_osx-x64_bin-sdk.zip" dest="${basedir}"/>
-         </then>
-     <elseif>
-         <isset property="build.host.islinux"/>
-         <then>
-            <echo message="detected property islinux is set"/>
-            <unzip src="${basedir}/openjfx-13.0.1_linux-x64_bin-sdk.zip" dest="${basedir}"/>
-         </then>
-     </elseif>
-     <else>
-         <echo message="failed to detect a host I know how to build on"/>
-     </else>
-     </if>
-   </target>
-
-   <target name="compile" depends="setup.javafx"
+   <target name="compile" depends="prepare"
            description="Compile Java sources">
-      <javac srcdir="${src}/client"
+      <javac srcdir="${src}"
              includeantruntime="false"
              destdir="${build}">
          <classpath refid="compile.classpath"/>
@@ -105,14 +74,13 @@
 
    <target name="client" depends="compile"
            description="execute the assignment client">
-      <java classname="ser321.assign3.ghli1.MediaLibraryApp"
+      <java classname="ser321.assign2.lindquis.MediaLibraryApp"
             fork="yes">
          <arg value="${userId}"/> 
          <arg value="${omdbkey}"/>
          <arg value="${hostId}"/>
          <arg value="${regPort}"/> 
          <classpath refid="compile.classpath"/>
-         <jvmarg value="-Djava.library.path=${javafx-lib-home}"/>
       </java>
    </target>
 
@@ -126,7 +94,7 @@
        </exec>
        <sequential>
          <sleep seconds="10"/>
-         <java classname="ser321.assign3.ghli1.SeriesLibraryImpl" fork="yes">
+         <java classname="ser321.assign2.lindquis.SeriesLibraryImpl" fork="yes">
 <!--           <sysproperty key="java.security.policy" value="policyServer"/> -->
            <sysproperty key="java.rmi.server.hostname" value="${hostId}"/>
            <arg value="${hostId}"/> 
@@ -140,6 +108,5 @@
    <target name="clean">
      <!-- Delete the ${build} and ${docs} directory trees -->
      <delete dir="${build}" />
-     <delete dir="${javafxhome}"/>
    </target>
 </project>

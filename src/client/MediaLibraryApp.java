@@ -7,6 +7,8 @@
  * You are free add more files and further modularize this class's
  * functionality.
  */
+ package ser321.assign2.lindquis;
+ 
 import javax.swing.*;
 import java.io.*;
 import java.nio.file.Paths;
@@ -34,7 +36,6 @@ import java.time.Duration;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONTokener;
-import ser321.assign3.ghli1.*;
 
 /**
  * Copyright 2020 Tim Lindquist, Gene H. Li
@@ -62,9 +63,8 @@ TreeSelectionListener {
     private static final String pre = "https://www.omdbapi.com/?apikey=";
 	private static String urlOMBD;
 	private String url;
-	//private MediaLibrary library;
-	private SeriesLibraryImpl searchlibrary;
-	private SeriesLibrary slibrary;
+	//private MediaLibrary library;re
+	private SeriesLibrary slibrary, searchlibrary;
 	private String omdbKey;
 	private boolean searchFlag = false;
 
@@ -169,11 +169,12 @@ TreeSelectionListener {
 	public void rebuildTree(){ //rebuilds the main library
 		rebuildTree(slibrary);		
 	}
-	public void rebuildTree(SeriesLibraryImpl pLib){ //builds library only used for search
+	public void rebuildTree(SeriesLibrary pLib){ //builds library only used for search
 		tree.removeTreeSelectionListener(this);
 		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 			DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
 			clearTree(root, model);
+			try {
 			ArrayList<String> titles = pLib.getSeriesSeason();
 			
 			for (int i = 0; i<titles.size(); i++){
@@ -209,6 +210,7 @@ TreeSelectionListener {
 					}
 				}					
 		}
+	}catch (Exception E) {E.printStackTrace();}
 		// expand all the nodes in the JTree
 		for(int r =0; r < tree.getRowCount(); r++){
 			tree.expandRow(r);
@@ -336,11 +338,8 @@ TreeSelectionListener {
 			System.exit(0);
 		}else if(e.getActionCommand().equals("Save")) {
 			boolean savRes = false;
-			JSONObject saveJSON = slibrary.saveLibraryToFile();
 			try {
-				FileWriter file = new FileWriter("seriesTest.json");//SAVE TO seriesTest.json
-				file.write(saveJSON.toString());
-				file.flush();
+				slibrary.saveLibraryToFile();
 				savRes = true;
 			}
 			catch(Exception ess) {}
@@ -348,8 +347,8 @@ TreeSelectionListener {
 		}else if(e.getActionCommand().equals("Restore")) {
 			//Couldn't get the same code to work inside SeriesLibraryImpl instance's restoreLibrary for some reason
 			boolean resRes = false;
-			slibrary = new SeriesLibraryImpl();
 			try {
+				slibrary = new SeriesLibraryImpl();
 				InputStream i = new FileInputStream(new File("seriesTest.json"));
 				JSONObject series = new JSONObject(new JSONTokener(i));
 				Iterator<String> keys = series.keys();
@@ -393,7 +392,10 @@ TreeSelectionListener {
 			sseason.setEpisodes(eps);
 //===============
 						//debug("VAL?"+sseason.getTitle());
-						slibrary.addSeriesSeason(sseason);
+						try {
+							slibrary.addSeriesSeason(sseason);
+						}
+						catch (Exception er) {er.printStackTrace();}
 					
 				}
 				//debug("00000000000000000000000"+slibrary.getSeriesSeason());
@@ -408,10 +410,13 @@ TreeSelectionListener {
 		}else if(e.getActionCommand().equals("Series-SeasonAdd")) {
 		 // TODO: implement that the whole season with all episodes currently in tree will be added to library 
 			//All episodes from search Query is added		
+			try{
 			slibrary.addSeriesSeason(
 			searchlibrary.getSeriesSeason(searchlibrary.getSeriesSeason().get(0))			
 			);
 			rebuildTree();
+			}
+			catch(Exception er) {er.printStackTrace();}
 		}else if(e.getActionCommand().equals("Search")) { 
 			// TODO: implement that the search result is used to create new series/season object
             /*
@@ -477,9 +482,12 @@ TreeSelectionListener {
 			
 			
 			//System.out.println(ss.toString());
+			try {
 			searchlibrary = new SeriesLibraryImpl();
 			searchlibrary.addSeriesSeason(ss);
 			rebuildTree(searchlibrary);
+		}
+		catch (Exception er) {er.printStackTrace();}
 
 			//populate search field with only search result
 			//rebuildTree();
@@ -575,15 +583,20 @@ TreeSelectionListener {
 	public static void main(String args[]) {
 		String name = "first.last";
 		String key = "use-your-last.ombd-key";
-		if (args.length >= 2){
+		String host = "host IP";
+		String port = "port num";
+		if (args.length >= 4){
 			//System.out.println("java -cp classes:lib/json.lib ser321.assign2.lindquist."+
 			//                   "MediaLibraryApp \"Lindquist Music Library\" lastFM-Key");
+			host = args[2];
+			port = args[3];
 			name = args[0];
 			key = args[1];
+			
 		}
 		try{
 			//System.out.println("calling constructor name "+name);
-			MediaLibraryApp mla = new MediaLibraryApp(name,key);
+			MediaLibraryApp mla = new MediaLibraryApp(name,key, host, port);
 		}catch (Exception ex){
 			ex.printStackTrace();
 		}

@@ -1,4 +1,5 @@
-package ser321.assign3.ghli1;
+
+ package ser321.assign2.lindquis;
 import java.io.*;
 import java.util.*;
 import java.net.URL;
@@ -39,9 +40,11 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	private static final String fileName="seriesTest.json";
 
 	public SeriesLibraryImpl() throws RemoteException{ //blank constructor, used to manually populate fields
+		super();
 		this.aLib = new Hashtable<String,SeriesSeason>();
 	}
 	public SeriesLibraryImpl(boolean init) throws RemoteException{ //constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
+		super();
 		this.aLib= new Hashtable<String,SeriesSeason>();
 		try { InputStream i = new FileInputStream(new File(fileName));
 				JSONObject series = new JSONObject(new JSONTokener(i));
@@ -85,7 +88,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 			System.out.println("sseason: "+sseason.getTitle());
 					this.aLib.put(nodeTitle, sseason);
 					
-			System.out.println(saveLibraryToFile().toString());
+			//System.out.println(saveLibraryToFile().toString());
 					
 				}
 			}
@@ -260,7 +263,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 
 	public static void main(String args[]){
 		try { 
-			String hostID="localhost";
+			String hostId="localhost";
 			String regPort="1099";
 			if(args.length >= 2){
 				hostId = args[0];
