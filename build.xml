@@ -13,19 +13,22 @@
    <property name="omdbkey" value="your-omdb-api-key" />
    <property name="parentDir" value="${user.dir}${file.separator}" />
 
+  <!-- Package dependencies -->
    <path id="compile.classpath">
       <pathelement location="${build}"/>
       <fileset dir="${lib}">
          <include name="json.jar"/>
       </fileset>
-	<fileset dir="${lib}">
+	    <fileset dir="${lib}">
          <include name="assign2Gui.jar"/>
       </fileset>
    </path>
 
    <target name="targets">
-      <echo message="targets are clean, prepare, setup.javafx, compile, and client. "/>
-      <echo message="to run enter: ant client  -DuserId=${userId} -Domdbkey=${omdbkey}"/>
+      <echo message="targets are clean, prepare, compile, server, and client."/>
+      <echo message="to run server (must be done first) enter: ant server -DhostId=${hostId} -DregPort=${regPort}"/>
+      <echo message="to run client(s) enter: ant client -DuserId=${userId} -Domdbkey=${omdbkey}"/>
+      <echo message="                        ant client -DuserId=${userId}2 -Domdbkey=${omdbkey}"/>
    </target>
 
    <target name="prepare">
@@ -63,6 +66,7 @@
       <echo message="build.host.platform is: ${build.host.platform}"/>
    </target>
 
+    <!-- Compile server and client -->
    <target name="compile" depends="prepare"
            description="Compile Java sources">
       <javac srcdir="${src}/server"
@@ -77,9 +81,10 @@
       </javac>
    </target>
 
+   <!-- Client Execution -->
    <target name="client" depends="compile"
            description="execute the assignment client">
-      <java classname="ser321.assign2.lindquis.MediaLibraryApp"
+      <java classname="ser321.assign3.ghli1.MediaLibraryApp"
             fork="yes">
          <arg value="${userId}"/> 
          <arg value="${omdbkey}"/>
@@ -89,6 +94,7 @@
       </java>
    </target>
 
+    <!-- Server Execution -->
    <target name="server" depends="compile"
            description="execute the assignment server">
       <parallel>
@@ -99,7 +105,7 @@
        </exec>
        <sequential>
          <sleep seconds="10"/>
-         <java classname="ser321.assign2.lindquis.SeriesLibraryImpl" fork="yes">
+         <java classname="ser321.assign3.ghli1.SeriesLibraryImpl" fork="yes">
 <!--           <sysproperty key="java.security.policy" value="policyServer"/> -->
            <sysproperty key="java.rmi.server.hostname" value="${hostId}"/>
            <arg value="${hostId}"/> 

@@ -1,5 +1,5 @@
 
- package ser321.assign2.lindquis;
+ package ser321.assign3.ghli1;
 import java.io.*;
 import java.util.*;
 import java.net.URL;
@@ -37,13 +37,16 @@ import org.json.JSONTokener;
 public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibrary{
 
 	protected Hashtable<String,SeriesSeason> aLib;
-	private static final String fileName="seriesTest.json";
-
-	public SeriesLibraryImpl() throws RemoteException{ //blank constructor, used to manually populate fields
+	private static final String fileName="seriesTest.json"; //JSON file on server-side that stores library information
+	
+	//blank constructor, used to manually populate fields
+	public SeriesLibraryImpl() throws RemoteException{ 
 		super();
 		this.aLib = new Hashtable<String,SeriesSeason>();
 	}
-	public SeriesLibraryImpl(boolean init) throws RemoteException{ //constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
+
+	//constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
+	public SeriesLibraryImpl(boolean init) throws RemoteException{
 		super();
 		System.out.println("test");
 		this.aLib= new Hashtable<String,SeriesSeason>();
@@ -107,6 +110,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	
 		return retVal;
 	}
+
 	//returns the SeriesSeason object that corresponds to the key provided
 	public SeriesSeason getSeriesSeason(String title) throws RemoteException{
 		return this.aLib.get(title);
@@ -194,70 +198,60 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		
 	}
 
-	//Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
+	//REFACTORED - Restores from JSON file in server-side application's root directory, returns true if successful
 	public boolean restoreLibraryFromFile() throws RemoteException{
 		boolean resRes = false;
-			try {
-				SeriesLibrary 
-				
-				slibrary = new SeriesLibraryImpl();
-				InputStream i = new FileInputStream(new File("seriesTest.json"));
-				JSONObject series = new JSONObject(new JSONTokener(i));
-				Iterator<String> keys = series.keys();
-				while (keys.hasNext()){
-					String nodeTitle = keys.next();
-				//debug("KEY"+nodeTitle);
-					JSONObject actual = series.optJSONObject(nodeTitle);
-				//debug("OBJ?"+actual.toString());
-						SeriesSeason sseason = new SeriesSeason();
-//==================================
-						JSONArray epObjs = actual.getJSONArray("Episodes");
-			//Iterator<String> keys = obj.keys();
+		
+		try {
+			SeriesLibrary slibrary = new SeriesLibraryImpl();
+			InputStream i = new FileInputStream(new File("seriesTest.json"));
+			JSONObject series = new JSONObject(new JSONTokener(i));
+			Iterator<String> keys = series.keys();
 			
-
-			ArrayList<Episode> eps = new ArrayList<>();
-			if (epObjs != null) {
-				for (int ik = 0 ; ik < epObjs.length(); ik++){
-					String epTitle;
-					int epNum;
-					double epRating;
-					JSONObject jEp = epObjs.getJSONObject(ik);
-					epTitle = (String)jEp.get("Title");
-						//debug("VALssss episodes?");
-					epNum = new Integer(jEp.get("Episode").toString());
-					epRating = new Double(jEp.get("imdbRating").toString());
-				
-					Episode ep = new Episode(epTitle, epNum, epRating);
-					eps.add(ep);
-						//debug("VALssss episodesafter?");
+			//create a SeriesSeason Object per JSONObject
+			while (keys.hasNext()){
+				String nodeTitle = keys.next();
+				JSONObject actual = series.optJSONObject(nodeTitle);
+				SeriesSeason sseason = new SeriesSeason();
+				JSONArray epObjs = actual.getJSONArray("Episodes");
+				ArrayList<Episode> eps = new ArrayList<>();
+				if (epObjs != null) {
+					for (int ik = 0 ; ik < epObjs.length(); ik++){
+						String epTitle;
+						int epNum;
+						double epRating;
+						JSONObject jEp = epObjs.getJSONObject(ik);
+						epTitle = (String)jEp.get("Title");
+							
+						epNum = new Integer(jEp.get("Episode").toString());
+						epRating = new Double(jEp.get("imdbRating").toString());
 					
-				}			
-			}
-			sseason.setTitle((String)actual.get("Title"));
-			sseason.setGenre((String)actual.get("Genre"));
-			sseason.setImgURL((String)actual.get("Poster"));
-			sseason.setPlotSummary((String)actual.get("Plot"));
-						//debug("VALssssSS?");
-			sseason.setRating(new Double(actual.get("imdbRating").toString()));			
-			
-			sseason.setSeason(new Integer(actual.get("Season").toString()));
-			sseason.setEpisodes(eps);
-//===============
-						//debug("VAL?"+sseason.getTitle());
-						try {
-							addSeriesSeason(sseason);
-						}
-						catch (Exception er) {er.printStackTrace();}
-					
+						Episode ep = new Episode(epTitle, epNum, epRating);
+						eps.add(ep);
+						
+					}			
 				}
-				//debug("00000000000000000000000"+slibrary.getSeriesSeason());
-				resRes = true; 
+				sseason.setTitle((String)actual.get("Title"));
+				sseason.setGenre((String)actual.get("Genre"));
+				sseason.setImgURL((String)actual.get("Poster"));
+				sseason.setPlotSummary((String)actual.get("Plot"));
+				sseason.setRating(new Double(actual.get("imdbRating").toString()));			
+				sseason.setSeason(new Integer(actual.get("Season").toString()));
+				sseason.setEpisodes(eps);
+				
+				
+				try {
+					addSeriesSeason(sseason);
+				}
+				catch (Exception er) {er.printStackTrace();}
+				
 			}
-			catch (Exception dl) {
-				//debug("hello, something went wrong withrestore"); 
-				dl.printStackTrace();
-			}
-			return resRes;
+			resRes = true; 
+		}
+		catch (Exception dl) {
+			dl.printStackTrace();
+		}
+		return resRes;
 	}
 
 	public static void main(String args[]){
@@ -269,6 +263,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 				regPort = args[1];
 			}
 
+			//Bind library object
 			SeriesLibrary obj = new SeriesLibraryImpl(true);
 			Naming.bind("rmi://"+hostId+":"+regPort+"/SeriesLibrary", obj);
 			System.out.println("Server bound in registry as: "+

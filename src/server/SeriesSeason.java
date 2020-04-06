@@ -1,6 +1,6 @@
 
 
- package ser321.assign2.lindquis;
+ package ser321.assign3.ghli1;
 import java.util.ArrayList;
 import org.json.JSONObject;
 import org.json.JSONArray;

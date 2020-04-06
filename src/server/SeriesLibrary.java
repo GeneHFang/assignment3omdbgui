@@ -1,5 +1,5 @@
 
- package ser321.assign2.lindquis;
+ package ser321.assign3.ghli1;
 import java.rmi.*;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -23,14 +23,23 @@ import org.json.JSONObject;
  * @author Gene H. Li ghli1@asu.edu
  *	   Tim Lindquist Tim.Lindquist@asu.edu
  *         Software Engineering, CIDSE, IAFSE, ASU Poly
- * @version March 2020
+ * @version April 2020
  */
 
 public interface SeriesLibrary extends Remote{
+	//Returns a string arraylist in format of "SHOW TITLE - SHOW SEASON", which acts as the keys for the aLib hash
 	public ArrayList<String> getSeriesSeason() throws RemoteException;
+
+	//returns the SeriesSeason object that corresponds to the key provided
 	public SeriesSeason getSeriesSeason(String title) throws RemoteException;
+
+	//Adds a SeriesSeason object to the aLib hash, using the "SHOW TITLE - SHOW SEASON" as key
 	public boolean addSeriesSeason(SeriesSeason seriesSeason) throws RemoteException;
+
+	//Removes a SeriesSeason object that corresponds to the key provided	
 	public boolean removeSeriesSeason(String title) throws RemoteException;
+	
+	//Save and restore library from JSON file in server directory
 	public boolean saveLibraryToFile() throws RemoteException;
 	public boolean restoreLibraryFromFile() throws RemoteException;
 	

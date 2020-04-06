@@ -7,7 +7,7 @@
  * You are free add more files and further modularize this class's
  * functionality.
  */
- package ser321.assign2.lindquis;
+ package ser321.assign3.ghli1;
  
 import javax.swing.*;
 import java.io.*;
@@ -429,75 +429,75 @@ TreeSelectionListener {
 			// with all episodes only display this new series/season with the episodes in tree
 
 			// Doing a fetch two times so that we only get the full series info (with poster, summary, rating) once
+			
 			// fetch series info
-
 			String searchReqURL = urlOMBD+seriesSearchJTF.getText().replace(" ", "%20");
-			//System.out.println("calling fetch with url: "+searchReqURL);
 			String json = fetchURL(searchReqURL);
-			//System.out.println("Fetch result just season: " + json);
 			
-			JSONObject seriesObj = new JSONObject(json);
 			
-
+			
 			// fetch season info
 			String searchReqURL2 = urlOMBD+seriesSearchJTF.getText().replace(" ", "%20")+"&season="+seasonSearchJTF.getText();
 			String jsonEpisodes = fetchURL(searchReqURL2);
-			//System.out.println("Fetch result episodes: " + jsonEpisodes);
-			JSONObject seasonObj = new JSONObject(jsonEpisodes);
-			//System.out.println("here??????");
-			JSONArray epObjs = seasonObj.getJSONArray("Episodes");
-			//Iterator<String> keys = obj.keys();
 			
 			
-			String title, genre, imgURL, plotSummary;
-			int season;
-			double rating;
-			ArrayList<Episode> eps = new ArrayList<>();
-			if (epObjs != null) {
-				for (int i = 0 ; i < epObjs.length(); i++){
-					String epTitle;
-					int epNum;
-					double epRating;
-					JSONObject jEp = epObjs.getJSONObject(i);
-					epTitle = (String)jEp.get("Title");
-					epNum = new Integer((String)jEp.get("Episode"));
-					try{
-						epRating = new Double((String)jEp.get("imdbRating"));
-					}
-					catch(Exception edd){epRating = 0.0;}		
+			//Tries to construct JSON object from search result. If search fails rebuilds tree from saved library
+			try{
+				JSONObject seriesObj = new JSONObject(json);
+				JSONObject seasonObj = new JSONObject(jsonEpisodes);
+				JSONArray epObjs = seasonObj.getJSONArray("Episodes");
 				
-					Episode ep = new Episode(epTitle, epNum, epRating);
-					//System.out.println("THIS IS THE RATING"+ep.getImdbRating());
-					eps.add(ep);
+				
+				String title, genre, imgURL, plotSummary;
+				int season;
+				double rating;
+				ArrayList<Episode> eps = new ArrayList<>();
+				if (epObjs != null) {
+					for (int i = 0 ; i < epObjs.length(); i++){
+						String epTitle;
+						int epNum;
+						double epRating;
+						JSONObject jEp = epObjs.getJSONObject(i);
+						epTitle = (String)jEp.get("Title");
+						epNum = new Integer((String)jEp.get("Episode"));
+						try{
+							epRating = new Double((String)jEp.get("imdbRating"));
+						}
+						catch(Exception edd){epRating = 0.0;}		
 					
-				}			
+						Episode ep = new Episode(epTitle, epNum, epRating);
+						eps.add(ep);
+						
+					}			
+				}
+				
+				title = (String)seriesObj.get("Title");
+				genre = (String)seriesObj.get("Genre");
+				imgURL = (String)seriesObj.get("Poster");
+				plotSummary = (String)seriesObj.get("Plot");
+				rating = new Double((String)seriesObj.get("imdbRating"));			
+				
+				season = new Integer((String)seasonObj.get("Season"));
+				
+				SeriesSeason ss = new SeriesSeason(title, season, rating, genre, imgURL, plotSummary, eps); //JSON based constructor wouldn't work for some reason, used this one instead
+				
+				//Builds temporary tree from search results. If failed, rebuilds tree from saved library
+				try {
+					searchlibrary = new SeriesLibraryImpl();
+					searchlibrary.addSeriesSeason(ss);
+					rebuildTree(searchlibrary);
+				}
+				catch (Exception er) { 
+					er.printStackTrace();
+					rebuildTree(); 
+				}
+			}
+			catch(Exception E) {
+				E.printStackTrace();
+				rebuildTree();
 			}
 			
-			title = (String)seriesObj.get("Title");
-			genre = (String)seriesObj.get("Genre");
-			imgURL = (String)seriesObj.get("Poster");
-			plotSummary = (String)seriesObj.get("Plot");
-			rating = new Double((String)seriesObj.get("imdbRating"));			
-			
-			season = new Integer((String)seasonObj.get("Season"));
-			
-			SeriesSeason ss = new SeriesSeason(title, season, rating, genre, imgURL, plotSummary, eps); //JSON based constructor wouldn't work for some reason, used this one instead
-			
-			
-			//System.out.println(ss.toString());
-			try {
-			searchlibrary = new SeriesLibraryImpl();
-			searchlibrary.addSeriesSeason(ss);
-			rebuildTree(searchlibrary);
-		}
-		catch (Exception er) {er.printStackTrace();}
 
-			//populate search field with only search result
-			//rebuildTree();
-			
-
-
-			//SeriesSeason test = new SeriesSeason(searchReqURL2);
 
 			/* TODO: implement here that this json will be used to create a Season object with the episodes included
 			 * This should also then build the tree and display the info in the left side bar (so the new tree with its episodes)

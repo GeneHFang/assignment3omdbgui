@@ -1,5 +1,5 @@
 
- package ser321.assign2.lindquis;
+ package ser321.assign3.ghli1;
 /**
  * Copyright 2020 Gene Li,
  *
@@ -27,15 +27,18 @@ public class Episode implements java.io.Serializable{
 	private int Episode;
 	private double ImdbRating;
 
+	//Empty constructor for populating fields using instantiated object w setters
 	public Episode(){
 	}
 
+	//Constructor for creating Episode object with properties outright.
 	public Episode(String Title, int Episode, double ImdbRating){
 		this.Title = Title;
 		this.Episode = Episode;
 		this.ImdbRating = ImdbRating;
 	}
 
+	//Getters
 	public String getTitle(){
 		return this.Title;
 	}
@@ -45,6 +48,8 @@ public class Episode implements java.io.Serializable{
 	public double getImdbRating(){
 		return this.ImdbRating;
 	}
+
+	//Setters
 	public void setTitle(String Title){
 		this.Title = Title;
 	}
