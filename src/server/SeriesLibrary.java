@@ -32,6 +32,6 @@ public interface SeriesLibrary extends Remote{
 	public boolean addSeriesSeason(SeriesSeason seriesSeason) throws RemoteException;
 	public boolean removeSeriesSeason(String title) throws RemoteException;
 	public boolean saveLibraryToFile() throws RemoteException;
-	public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException;
+	//public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException;
 	
 }

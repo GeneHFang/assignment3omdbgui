@@ -194,7 +194,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		
 	}
 
-	//Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
+	/*Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
 	public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException{
 		try{
 		Iterator<String> keys = file.keys();
@@ -260,7 +260,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		return true;}
 		catch (Exception e){ return false; }
 	}
-
+*/
 
 	public static void main(String args[]){
 		try { 
@@ -272,7 +272,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 			}
 
 			SeriesLibrary obj = new SeriesLibraryImpl(true);
-			Naming.rebind("rmi://"+hostId+":"+regPort+"/SeriesLibrary", obj);
+			Naming.bind("rmi://"+hostId+":"+regPort+"/SeriesLibrary", obj);
 			System.out.println("Server bound in registry as: "+
 			"rmi://"+hostId+":"+regPort+"/SeriesLibrary");
 		}
