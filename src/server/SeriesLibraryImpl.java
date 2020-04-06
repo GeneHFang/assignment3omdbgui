@@ -256,7 +256,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 			dl.printStackTrace();
 		}
 		
-		System.out.println("Library restore "+(resRes ? "successful!" : "failed");
+		System.out.println("Library restore "+(resRes ? "successful!" : "failed"));
 		return resRes;
 	}
 
