@@ -194,73 +194,71 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		
 	}
 
-	/*Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
-	public boolean restoreLibraryFromFile(JSONObject file) throws RemoteException{
-		try{
-		Iterator<String> keys = file.keys();
-		String titleKey = "";
-		int seasonKey = -1; 
-
-		while (keys.hasNext()){
-			SeriesSeason ss = new SeriesSeason();
+	//Supposed to create a library from a JSON argument, but doesn't work for some reason. Implemented instead directly inside MediaLibraryApp.java
+	public boolean restoreLibraryFromFile() throws RemoteException{
+		boolean resRes = false;
+			try {
+				SeriesLibrary 
+				
+				slibrary = new SeriesLibraryImpl();
+				InputStream i = new FileInputStream(new File("seriesTest.json"));
+				JSONObject series = new JSONObject(new JSONTokener(i));
+				Iterator<String> keys = series.keys();
+				while (keys.hasNext()){
+					String nodeTitle = keys.next();
+				//debug("KEY"+nodeTitle);
+					JSONObject actual = series.optJSONObject(nodeTitle);
+				//debug("OBJ?"+actual.toString());
+						SeriesSeason sseason = new SeriesSeason();
+//==================================
+						JSONArray epObjs = actual.getJSONArray("Episodes");
+			//Iterator<String> keys = obj.keys();
 			
-			String key = keys.next();
-		System.out.println("keys???" + key);
-			
-			Object obj = file.get(key);
 
-			if (obj instanceof String) {
-				if (key == "Title") { 
-					titleKey = (String)obj;
-					ss.setTitle((String)obj);	
-				}	
-				if (key == "Genre") { ss.setGenre((String)obj); }	
-				if (key == "Poster") { ss.setImgURL((String)obj); }	
-				if (key == "Plot") { ss.setPlotSummary((String)obj); }			
+			ArrayList<Episode> eps = new ArrayList<>();
+			if (epObjs != null) {
+				for (int ik = 0 ; ik < epObjs.length(); ik++){
+					String epTitle;
+					int epNum;
+					double epRating;
+					JSONObject jEp = epObjs.getJSONObject(ik);
+					epTitle = (String)jEp.get("Title");
+						//debug("VALssss episodes?");
+					epNum = new Integer(jEp.get("Episode").toString());
+					epRating = new Double(jEp.get("imdbRating").toString());
+				
+					Episode ep = new Episode(epTitle, epNum, epRating);
+					eps.add(ep);
+						//debug("VALssss episodesafter?");
+					
+				}			
 			}
-			else if (obj instanceof Integer){ 
-				int val = new Integer((String)obj);
-				seasonKey = val;				
-				ss.setSeason(val);
-			}
-			else if (obj instanceof Double){ 
-				double val = new Double((String) obj);				
-				ss.setRating(val);
-			}
-			else if (obj instanceof JSONArray){
-				ArrayList<Episode> episodes = new ArrayList<>();
-				JSONArray jArr = (JSONArray) obj;
-				if (jArr != null) {
-					for(int i = 0 ; i < jArr.length(); i++){
-						Episode ep = new Episode();					
-						JSONObject jEp = jArr.getJSONObject(i); 
-						Iterator<String> epKeys = jEp.keys();
-							while(epKeys.hasNext()){
-								String epKey = epKeys.next();
-								Object epObj = jEp.get(epKey);
-								if(epObj instanceof String) { ep.setTitle((String)epObj); }
-								else if (epObj instanceof Integer) {
-									int val = (int) epObj;
-									ep.setEpisode(val);
-								}
-								else if (epObj instanceof Double) {
-									double val = (double) epObj;
-									ep.setImdbRating(val);
-								}
-							}
-						episodes.add(ep);
-					}				
+			sseason.setTitle((String)actual.get("Title"));
+			sseason.setGenre((String)actual.get("Genre"));
+			sseason.setImgURL((String)actual.get("Poster"));
+			sseason.setPlotSummary((String)actual.get("Plot"));
+						//debug("VALssssSS?");
+			sseason.setRating(new Double(actual.get("imdbRating").toString()));			
+			
+			sseason.setSeason(new Integer(actual.get("Season").toString()));
+			sseason.setEpisodes(eps);
+//===============
+						//debug("VAL?"+sseason.getTitle());
+						try {
+							addSeriesSeason(sseason);
+						}
+						catch (Exception er) {er.printStackTrace();}
+					
 				}
-				ss.setEpisodes(episodes);
+				//debug("00000000000000000000000"+slibrary.getSeriesSeason());
+				resRes = true; 
 			}
-		System.out.println("Putting in "+titleKey+" - Season "+seasonKey);
-
-		this.aLib.put(titleKey+" - Season "+seasonKey,ss);
-		}
-		return true;}
-		catch (Exception e){ return false; }
+			catch (Exception dl) {
+				//debug("hello, something went wrong withrestore"); 
+				dl.printStackTrace();
+			}
+			return resRes;
 	}
-*/
 
 	public static void main(String args[]){
 		try { 

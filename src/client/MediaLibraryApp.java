@@ -347,8 +347,8 @@ TreeSelectionListener {
 		}else if(e.getActionCommand().equals("Restore")) {
 			//Couldn't get the same code to work inside SeriesLibraryImpl instance's restoreLibrary for some reason
 			boolean resRes = false;
-			try {
-				slibrary = new SeriesLibraryImpl();
+			/*try {
+				 slibrary = new SeriesLibraryImpl();
 				InputStream i = new FileInputStream(new File("seriesTest.json"));
 				JSONObject series = new JSONObject(new JSONTokener(i));
 				Iterator<String> keys = series.keys();
@@ -381,6 +381,7 @@ TreeSelectionListener {
 					
 				}			
 			}
+			slibrary.restoreLibraryFromFile(
 			sseason.setTitle((String)actual.get("Title"));
 			sseason.setGenre((String)actual.get("Genre"));
 			sseason.setImgURL((String)actual.get("Poster"));
@@ -404,7 +405,9 @@ TreeSelectionListener {
 			catch (Exception dl) {
 				debug("hello, something went wrong withrestore"); 
 				dl.printStackTrace();
-			}
+			} */
+			try { slibrary.restoreLibraryFromFile(); }
+			catch(Exception er) { er.printStackTrace(); }
 			rebuildTree();
 			System.out.println("Restore "+((resRes)?"successful":"not implemented")); // TODO: implement that tree is restored to library
 		}else if(e.getActionCommand().equals("Series-SeasonAdd")) {
