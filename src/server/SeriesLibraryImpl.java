@@ -45,16 +45,17 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	}
 	public SeriesLibraryImpl(boolean init) throws RemoteException{ //constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
 		super();
+		System.out.println("test");
 		this.aLib= new Hashtable<String,SeriesSeason>();
 		try { InputStream i = new FileInputStream(new File(fileName));
 				JSONObject series = new JSONObject(new JSONTokener(i));
 				Iterator<String> keys = series.keys();
 				while (keys.hasNext()){
 					String nodeTitle = keys.next();
-					System.out.println("KEY"+nodeTitle);
+					//System.out.println("KEY"+nodeTitle);
 					JSONObject actual = series.optJSONObject(nodeTitle);
 					
-					System.out.println("SON"+actual.toString());
+					//System.out.println("SON"+actual.toString());
 						SeriesSeason sseason = new SeriesSeason();
 						JSONArray epObjs = actual.getJSONArray("Episodes");
 			//Iterator<String> keys = obj.keys();
@@ -70,7 +71,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 					epTitle = (String)jEp.get("Title");
 					epNum = new Integer(jEp.get("Episode").toString());
 					epRating = new Double(jEp.get("imdbRating").toString());
-					System.out.println("attrs: "+epTitle+epNum+epRating);
+					//System.out.println("attrs: "+epTitle+epNum+epRating);
 					Episode ep = new Episode(epTitle, epNum, epRating);
 					eps.add(ep);
 					
@@ -263,8 +264,8 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 
 	public static void main(String args[]){
 		try { 
-			String hostId="localhost";
-			String regPort="1099";
+			String hostId="192.168.1.60";
+			String regPort="2020";
 			if(args.length >= 2){
 				hostId = args[0];
 				regPort = args[1];

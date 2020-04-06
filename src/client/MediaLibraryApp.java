@@ -583,8 +583,8 @@ TreeSelectionListener {
 	public static void main(String args[]) {
 		String name = "first.last";
 		String key = "use-your-last.ombd-key";
-		String host = "host IP";
-		String port = "port num";
+		String host = "localhost";
+		String port = "1099";
 		if (args.length >= 4){
 			//System.out.println("java -cp classes:lib/json.lib ser321.assign2.lindquist."+
 			//                   "MediaLibraryApp \"Lindquist Music Library\" lastFM-Key");

@@ -65,7 +65,12 @@
 
    <target name="compile" depends="prepare"
            description="Compile Java sources">
-      <javac srcdir="${src}"
+      <javac srcdir="${src}/server"
+             includeantruntime="false"
+             destdir="${build}">
+         <classpath refid="compile.classpath"/>
+      </javac>
+      <javac srcdir="${src}/client"
              includeantruntime="false"
              destdir="${build}">
          <classpath refid="compile.classpath"/>
