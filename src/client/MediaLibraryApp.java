@@ -59,7 +59,7 @@ TreeWillExpandListener,
 ActionListener,
 TreeSelectionListener {
 
-	private static final boolean debugOn = true;
+	private static final boolean debugOn = false;
     private static final String pre = "https://www.omdbapi.com/?apikey=";
 	private static String urlOMBD;
 	private String url;
@@ -343,79 +343,19 @@ TreeSelectionListener {
 				savRes = true;
 			}
 			catch(Exception ess) {}
-			System.out.println("Save "+((savRes)?"successful":"not implemented")); //TODO implement that current library is saved to JSON file
+			System.out.println("Save to server "+((savRes)?"successful":"failed")); //TODO implement that current library is saved to JSON file
 		}else if(e.getActionCommand().equals("Restore")) {
-			//Couldn't get the same code to work inside SeriesLibraryImpl instance's restoreLibrary for some reason
 			boolean resRes = false;
-			/*try {
-				 slibrary = new SeriesLibraryImpl();
-				InputStream i = new FileInputStream(new File("seriesTest.json"));
-				JSONObject series = new JSONObject(new JSONTokener(i));
-				Iterator<String> keys = series.keys();
-				while (keys.hasNext()){
-					String nodeTitle = keys.next();
-				//debug("KEY"+nodeTitle);
-					JSONObject actual = series.optJSONObject(nodeTitle);
-				//debug("OBJ?"+actual.toString());
-						SeriesSeason sseason = new SeriesSeason();
-//==================================
-						JSONArray epObjs = actual.getJSONArray("Episodes");
-			//Iterator<String> keys = obj.keys();
-			
-
-			ArrayList<Episode> eps = new ArrayList<>();
-			if (epObjs != null) {
-				for (int ik = 0 ; ik < epObjs.length(); ik++){
-					String epTitle;
-					int epNum;
-					double epRating;
-					JSONObject jEp = epObjs.getJSONObject(ik);
-					epTitle = (String)jEp.get("Title");
-						//debug("VALssss episodes?");
-					epNum = new Integer(jEp.get("Episode").toString());
-					epRating = new Double(jEp.get("imdbRating").toString());
-				
-					Episode ep = new Episode(epTitle, epNum, epRating);
-					eps.add(ep);
-						//debug("VALssss episodesafter?");
-					
-				}			
-			}
-			slibrary.restoreLibraryFromFile(
-			sseason.setTitle((String)actual.get("Title"));
-			sseason.setGenre((String)actual.get("Genre"));
-			sseason.setImgURL((String)actual.get("Poster"));
-			sseason.setPlotSummary((String)actual.get("Plot"));
-						//debug("VALssssSS?");
-			sseason.setRating(new Double(actual.get("imdbRating").toString()));			
-			
-			sseason.setSeason(new Integer(actual.get("Season").toString()));
-			sseason.setEpisodes(eps);
-//===============
-						//debug("VAL?"+sseason.getTitle());
-						try {
-							slibrary.addSeriesSeason(sseason);
-						}
-						catch (Exception er) {er.printStackTrace();}
-					
-				}
-				//debug("00000000000000000000000"+slibrary.getSeriesSeason());
-				resRes = true; 
-			}
-			catch (Exception dl) {
-				debug("hello, something went wrong withrestore"); 
-				dl.printStackTrace();
-			} */
-			try { slibrary.restoreLibraryFromFile(); }
+			try { resRes=slibrary.restoreLibraryFromFile(); }
 			catch(Exception er) { er.printStackTrace(); }
 			rebuildTree();
-			System.out.println("Restore "+((resRes)?"successful":"not implemented")); // TODO: implement that tree is restored to library
+			System.out.println("Restore from server"+((resRes)?"successful":"failed")); // TODO: implement that tree is restored to library
 		}else if(e.getActionCommand().equals("Series-SeasonAdd")) {
 		 // TODO: implement that the whole season with all episodes currently in tree will be added to library 
 			//All episodes from search Query is added		
 			try{
-			slibrary.addSeriesSeason(
-			searchlibrary.getSeriesSeason(searchlibrary.getSeriesSeason().get(0))			
+				slibrary.addSeriesSeason(
+				searchlibrary.getSeriesSeason(searchlibrary.getSeriesSeason().get(0))			
 			);
 			rebuildTree();
 			}

@@ -48,7 +48,6 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	//constructor that is called first, populates user's current library seriesTest.json. If user has no JSON file saved, it will log to console informing user.
 	public SeriesLibraryImpl(boolean init) throws RemoteException{
 		super();
-		System.out.println("test");
 		this.aLib= new Hashtable<String,SeriesSeason>();
 		try { InputStream i = new FileInputStream(new File(fileName));
 				JSONObject series = new JSONObject(new JSONTokener(i));
@@ -119,6 +118,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	//Adds a SeriesSeason object to the aLib hash, using the "SHOW TITLE - SHOW SEASON" as key
 	public boolean addSeriesSeason(SeriesSeason seriesSeason) throws RemoteException{
 		try{
+			System.out.println("Adding "+seriesSeason.getTitle()+" - Season "+seriesSeason.getSeason());
 			this.aLib.put(seriesSeason.getTitle()+" - Season "+seriesSeason.getSeason(), seriesSeason);
 			
 			return true;
@@ -131,6 +131,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	//Removes a SeriesSeason object that corresponds to the key provided
 	public boolean removeSeriesSeason(String title) throws RemoteException{
 		try{
+			System.out.println("Removing "+title);
 			this.aLib.remove(title);
 			return true;
 		}
@@ -151,6 +152,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 	
 	//create JSON of Library
 	public boolean saveLibraryToFile() throws RemoteException{
+		System.out.println("Saving Library to seriesTest.json...");
 		JSONObject obj = new JSONObject();
 		Iterator<String> keys = getKeys();
 		boolean saveres = false; 
@@ -192,7 +194,7 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		catch(Exception e) {
 			System.out.println("Error saving, "+e.getMessage());
 		}
-
+		System.out.println("Saving to seriesTest.json"+(saveres ? "succeeded" : "failed"));
 		return saveres;
 
 		
@@ -200,6 +202,8 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 
 	//REFACTORED - Restores from JSON file in server-side application's root directory, returns true if successful
 	public boolean restoreLibraryFromFile() throws RemoteException{
+		
+		System.out.println("Restoring Library from seriesTest.json...");
 		boolean resRes = false;
 		
 		try {
@@ -251,6 +255,8 @@ public class SeriesLibraryImpl extends UnicastRemoteObject implements SeriesLibr
 		catch (Exception dl) {
 			dl.printStackTrace();
 		}
+		
+		System.out.println("Library restore "+(resRes ? "successful!" : "failed");
 		return resRes;
 	}
 
